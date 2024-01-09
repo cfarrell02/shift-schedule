@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, TextField, Typography, Grid, styled, Divider } from '@mui/material';
+import { Button, TextField, Typography, Grid, styled, Divider, ButtonGroup, CircularProgress } from '@mui/material';
 import ScheduleGrid from '../schedule-grid';
 import ColorKey from '../schedule-key';
 import jsPDF from 'jspdf';
@@ -17,6 +17,7 @@ const FourShiftScheduleWithGrid = () => {
   const [daysOff, setDaysOff] = useState(4);
   const [scheduleDetails, setScheduleDetails] = useState({});
   const pdfRef = React.createRef();
+  const [loading, setLoading] = useState(false);
 
   //useEffect validation for firstDayIn, dayShifts, nightShifts, and daysOff
   useEffect(() => {
@@ -36,7 +37,9 @@ const FourShiftScheduleWithGrid = () => {
   }, [dayShifts, nightShifts, daysOff, firstDayIn]);
     
 
-  const handleGenerateSchedule = () => {
+  const handleGenerateSchedule = async () => {
+    setLoading(true);
+
     // Check if firstDayIn, dayShifts, nightShifts, and daysOff are valid
     if (!firstDayIn || dayShifts < 0 || nightShifts < 0 || daysOff < 0) {
       alert('Please enter valid values');
@@ -87,24 +90,51 @@ const FourShiftScheduleWithGrid = () => {
     console.log(scheduleDetails);
   
     setScheduleDetails(scheduleDetails);
+
+    setLoading(false);
   };
 
   const downloadSchedulePDF = () => {
+
+    const downloadMargin = 10;
     const pdf = new jsPDF();
-    const pdfMargin = 10;
 
     html2canvas(pdfRef.current).then((canvas) => {
       const imgData = canvas.toDataURL('image/png');
 
-      const pdfWidth = pdf.internal.pageSize.getWidth() - pdfMargin * 2;
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width - pdfMargin * 2;
+      const pdfWidth = pdf.internal.pageSize.getWidth() - downloadMargin * 2;
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width - downloadMargin * 2;
 
-      pdf.addImage(imgData, 'PNG', pdfMargin, pdfMargin, pdfWidth, pdfHeight);
+      pdf.addImage(imgData, 'PNG', downloadMargin, downloadMargin, pdfWidth, pdfHeight);
       pdf.save(`schedule-${new Date(firstDayIn).getFullYear()}.pdf`);
     });
   };
-  
 
+  const downloadSchedulePNG = () => {
+
+    const downloadMargin = 100
+    html2canvas(pdfRef.current).then((canvas) => {
+      const imgData = canvas.toDataURL('image/png');
+  
+      // Create a new canvas with margins
+      const newCanvas = document.createElement('canvas');
+      const ctx = newCanvas.getContext('2d');
+  
+      newCanvas.width = canvas.width + downloadMargin*2 ;
+      newCanvas.height = canvas.height + downloadMargin*2 ;
+  
+      ctx.fillStyle = 'white'; // Set the background color
+      ctx.fillRect(0, 0, newCanvas.width, newCanvas.height);
+      ctx.drawImage(canvas, downloadMargin, downloadMargin);
+  
+      // Convert the new canvas to PNG and trigger the download
+      const link = document.createElement('a');
+      link.download = `schedule-${new Date(firstDayIn).getFullYear()}.png`;
+      link.href = newCanvas.toDataURL('image/png');
+      link.click();
+    });
+  };
+    
   return (
     <StyledDiv>
       <Grid container direction="column" spacing={2} alignItems="center">
@@ -161,11 +191,15 @@ const FourShiftScheduleWithGrid = () => {
             <ColorKey />
             <ScheduleGrid scheduleDetails={scheduleDetails} /> 
             </div>
-            
-            <Button variant="contained" onClick={() => downloadSchedulePDF()}>
-              Download Schedule
+            <ButtonGroup variant="outlined" aria-label="outlined primary button group">
+            <Button onClick={() => downloadSchedulePDF()}>
+              Download as PDF
             </Button>
-            </div>): null }
+            <Button  onClick={() => downloadSchedulePNG()}>
+              Download as PNG
+            </Button>
+            </ButtonGroup>
+            </div>): (loading && <CircularProgress/>) }
         </Grid>
       </Grid>
     </StyledDiv>
