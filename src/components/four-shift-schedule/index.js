@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, TextField, Typography, Grid, styled } from '@mui/material';
 import ScheduleGrid from '../schedule-grid';
 import ColorKey from '../schedule-key';
@@ -11,12 +11,30 @@ const StyledDiv = styled('div')({
 });
 
 const FourShiftScheduleWithGrid = () => {
-  const [firstDayIn, setFirstDayIn] = useState('');
+  const [firstDayIn, setFirstDayIn] = useState(new Date());
   const [dayShifts, setDayShifts] = useState(0);
   const [nightShifts, setNightShifts] = useState(0);
   const [daysOff, setDaysOff] = useState(0);
   const [scheduleDetails, setScheduleDetails] = useState({});
   const pdfRef = React.createRef();
+
+  //useEffect validation for firstDayIn, dayShifts, nightShifts, and daysOff
+  useEffect(() => {
+    if (dayShifts<0)
+      setDayShifts(0);
+    if (nightShifts<0)
+      setNightShifts(0);
+    if (daysOff<0)
+      setDaysOff(0);
+
+    if (firstDayIn) {
+      const firstDayInDay = (new Date(firstDayIn)).getDate();
+      if (firstDayInDay - 1 < 0 || firstDayInDay - 1 > 7) {
+        setFirstDayIn(new Date(firstDayIn).getFullYear() + '-01-01');
+      }
+    }
+  }, [dayShifts, nightShifts, daysOff, firstDayIn]);
+    
 
   const handleGenerateSchedule = () => {
     // Check if firstDayIn, dayShifts, nightShifts, and daysOff are valid
@@ -51,16 +69,16 @@ const FourShiftScheduleWithGrid = () => {
       31,
     ];
   
-    let dayCounter = 0;
+    let dayCounter = workPattern.length;
     //Modify dayCounter based on firstDayIn
-    const firstDayInDay = new Date(firstDayIn).getDay();
+    const firstDayInDay = new Date(firstDayIn).getDate();
     dayCounter -= firstDayInDay - 1;
     for (let month = 0; month < 12; month++) {
       scheduleDetails[month] = [];
       const daysInCurrentMonth = daysInMonth[month];
       for (let day = 1; day <= daysInCurrentMonth; day++) {
         const currentDate = new Date(year, month, day);
-        const dayObject = { date: new Date(currentDate), shift: workPattern[dayCounter++%workPattern.length] || "Off" };
+        const dayObject = { date: new Date(currentDate), shift: workPattern[dayCounter++%workPattern.length] };
 
         scheduleDetails[month].push(dayObject);
       }
@@ -82,7 +100,7 @@ const FourShiftScheduleWithGrid = () => {
       const pdfHeight = (canvas.height * pdfWidth) / canvas.width - pdfMargin * 2;
 
       pdf.addImage(imgData, 'PNG', pdfMargin, pdfMargin, pdfWidth, pdfHeight);
-      pdf.save('sample.pdf');
+      pdf.save(`schedule-${new Date(firstDayIn).getFullYear()}.pdf`);
     });
   };
   
@@ -95,11 +113,11 @@ const FourShiftScheduleWithGrid = () => {
         </Grid>
         <Grid item>
           <TextField
-            label="First Day In"
+            label="Start of first block"
             type="date"
             value={firstDayIn}
             onChange={(e) => setFirstDayIn(e.target.value)}
-            sx={{ m: 1, width: '10ch' }}
+            sx={{ m: 1, width: '15ch' }}
             InputLabelProps={{ shrink: true }}
           />
           <TextField
@@ -138,6 +156,7 @@ const FourShiftScheduleWithGrid = () => {
         <Grid item>
           { scheduleDetails.length > 0 ? (<div style={{textAlign: 'center'}}>
             <div style={{border: '1px solid black', padding: '10px', marginBottom: '20px'}} ref={pdfRef}>
+            <Typography variant="h3">{new Date(firstDayIn).getFullYear()}</Typography>
             <ColorKey />
             <ScheduleGrid scheduleDetails={scheduleDetails} /> 
             </div>

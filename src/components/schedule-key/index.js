@@ -3,9 +3,10 @@ import { Paper, Typography, Box, Grid } from '@mui/material';
 
 const ColorKey = () => {
   const colorCodes = [
+    { label: 'Off', color: 'transparent' }, // No color for Off
     { label: 'Day Shift', color: '#2196f3' }, // Blue for Day Shift
     { label: 'Night Shift', color: '#ffeb3b' }, // Yellow for Night Shift
-    { label: 'Off', color: 'transparent' }, // No color for Off
+
   ];
 
   return (
