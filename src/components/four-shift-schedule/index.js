@@ -156,7 +156,7 @@ const FourShiftScheduleWithGrid = () => {
         <Divider sx={{ width: '100%', marginTop: '20px'}} />
         <Grid item>
           { scheduleDetails.length > 0 ? (<div style={{textAlign: 'center'}}>
-            <div style={{border: '1px solid black', padding: '10px', marginBottom: '20px'}} ref={pdfRef}>
+            <div style={{border: '1px solid black', padding: '10px', marginBottom: '20px', width: "1144px", height:"1768px"}} ref={pdfRef}>
             <Typography variant="h3">{new Date(firstDayIn).getFullYear()}</Typography>
             <ColorKey />
             <ScheduleGrid scheduleDetails={scheduleDetails} /> 
