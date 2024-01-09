@@ -1,10 +1,10 @@
 import React from 'react';
-import { Container, Grid, Typography } from '@mui/material';
+import { Card, Container, Grid, Typography } from '@mui/material';
 import FourShiftSchedule from '../../components/four-shift-schedule';
 
 const MainPage = () => {
   return (
-    <Container sx={{ py: 8 }}>
+    <Card sx={{ width: '70%', padding: '20px' ,margin: 'auto', marginTop: '50px', minHeight: '80vh' }}>
       <Grid container spacing={4}>
         <Grid item xs={12}>
           <Typography variant="h4" align="center" gutterBottom>
@@ -13,7 +13,7 @@ const MainPage = () => {
           <FourShiftSchedule />
         </Grid>
       </Grid>
-    </Container>
+    </Card>
   );
 };
 

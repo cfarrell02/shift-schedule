@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, TextField, Typography, Grid, styled } from '@mui/material';
+import { Button, TextField, Typography, Grid, styled, Divider } from '@mui/material';
 import ScheduleGrid from '../schedule-grid';
 import ColorKey from '../schedule-key';
 import jsPDF from 'jspdf';
@@ -12,9 +12,9 @@ const StyledDiv = styled('div')({
 
 const FourShiftScheduleWithGrid = () => {
   const [firstDayIn, setFirstDayIn] = useState(new Date());
-  const [dayShifts, setDayShifts] = useState(0);
-  const [nightShifts, setNightShifts] = useState(0);
-  const [daysOff, setDaysOff] = useState(0);
+  const [dayShifts, setDayShifts] = useState(2);
+  const [nightShifts, setNightShifts] = useState(2);
+  const [daysOff, setDaysOff] = useState(4);
   const [scheduleDetails, setScheduleDetails] = useState({});
   const pdfRef = React.createRef();
 
@@ -153,6 +153,7 @@ const FourShiftScheduleWithGrid = () => {
           </Button>
           }
         </Grid>
+        <Divider sx={{ width: '100%', marginTop: '20px'}} />
         <Grid item>
           { scheduleDetails.length > 0 ? (<div style={{textAlign: 'center'}}>
             <div style={{border: '1px solid black', padding: '10px', marginBottom: '20px'}} ref={pdfRef}>
