@@ -1,19 +1,19 @@
 {
   "files": {
     "main.css": "/shift-schedule/static/css/main.4c2dfac1.css",
-    "main.js": "/shift-schedule/static/js/main.0d2c73b9.js",
+    "main.js": "/shift-schedule/static/js/main.3398bb0b.js",
     "static/js/703.e48937ad.chunk.js": "/shift-schedule/static/js/703.e48937ad.chunk.js",
     "static/js/379.cf77cf74.chunk.js": "/shift-schedule/static/js/379.cf77cf74.chunk.js",
     "static/js/787.de9bfad1.chunk.js": "/shift-schedule/static/js/787.de9bfad1.chunk.js",
     "index.html": "/shift-schedule/index.html",
     "main.4c2dfac1.css.map": "/shift-schedule/static/css/main.4c2dfac1.css.map",
-    "main.0d2c73b9.js.map": "/shift-schedule/static/js/main.0d2c73b9.js.map",
+    "main.3398bb0b.js.map": "/shift-schedule/static/js/main.3398bb0b.js.map",
     "703.e48937ad.chunk.js.map": "/shift-schedule/static/js/703.e48937ad.chunk.js.map",
     "379.cf77cf74.chunk.js.map": "/shift-schedule/static/js/379.cf77cf74.chunk.js.map",
     "787.de9bfad1.chunk.js.map": "/shift-schedule/static/js/787.de9bfad1.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.4c2dfac1.css",
-    "static/js/main.0d2c73b9.js"
+    "static/js/main.3398bb0b.js"
   ]
 }
