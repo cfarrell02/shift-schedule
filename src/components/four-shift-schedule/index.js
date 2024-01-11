@@ -137,7 +137,7 @@ const FourShiftScheduleWithGrid = () => {
   };
     
   return (
-    <StyledDiv>
+    <StyledDiv style={{overflow: 'auto'}} >
       <Grid container direction="column" spacing={2} alignItems="center">
         <Grid item>
           <Typography variant="h6">Four Shift Schedule Generator</Typography>
