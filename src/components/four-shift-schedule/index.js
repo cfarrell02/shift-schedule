@@ -70,13 +70,14 @@ const FourShiftScheduleWithGrid = () => {
       31,
       30,
       31,
+      31 // Extra month to add in january to end of december
     ];
   
     let dayCounter = workPattern.length;
     //Modify dayCounter based on firstDayIn
     const firstDayInDay = new Date(firstDayIn).getDate();
     dayCounter -= firstDayInDay - 1;
-    for (let month = 0; month < 12; month++) {
+    for (let month = 0; month < 13; month++) { // Include an extra month as each month has information for the next month
       scheduleDetails[month] = [];
       const daysInCurrentMonth = daysInMonth[month];
       for (let day = 1; day <= daysInCurrentMonth; day++) {
@@ -147,7 +148,7 @@ const FourShiftScheduleWithGrid = () => {
             type="date"
             value={firstDayIn}
             onChange={(e) => setFirstDayIn(e.target.value)}
-            sx={{ m: 1, width: '15ch' }}
+            sx={{ m: 1, width: '20ch' }}
             InputLabelProps={{ shrink: true }}
           />
           <TextField

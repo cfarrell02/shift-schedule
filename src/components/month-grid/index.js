@@ -1,7 +1,7 @@
 import React from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography } from '@mui/material';
 
-const MonthSchedule = ({ monthData }) => {
+const MonthSchedule = ({ monthData, nextMonthData }) => {
   const monthName = monthData.length > 0 ? monthData[0].date.toLocaleString('default', { month: 'long' }) : '';
   const daysInMonth = monthData.length;
   const columns = 7; // Change to 6 or 7 for the number of columns you want
@@ -62,7 +62,9 @@ const MonthSchedule = ({ monthData }) => {
                 {row.length < columns && (
                   // Fill remaining cells if the row is not full
                   Array.from({ length: columns - row.length }, (_, index) => (
-                    <TableCell key={row.length + index} />
+                    <TableCell key={row.length + index} style={{ backgroundColor: getColorForShift(nextMonthData[index].shift) }}>
+                      <span style={{color: 'gray' }}>{nextMonthData[index].date.getDate()}</span> 
+                    </TableCell>
                   ))
                 )}
               </TableRow>
