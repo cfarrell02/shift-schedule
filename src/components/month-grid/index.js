@@ -3,16 +3,16 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 
 const MonthSchedule = ({ monthData, nextMonthData }) => {
   const monthName = monthData.length > 0 ? monthData[0].date.toLocaleString('default', { month: 'long' }) : '';
-  const daysInMonth = monthData.length;
   const columns = 7; // Change to 6 or 7 for the number of columns you want
 
-  const rows = Math.ceil(daysInMonth / columns);
+
 
   
   const monthStartDay = monthData.length > 0 ? monthData[0].date.getDay() : 0;
     const emptyCells = Array.from({ length: monthStartDay }, (_, index) => ({ date: null, shift: null }));
 
     monthData = [...emptyCells, ...monthData];
+  const rows = Math.ceil(monthData.length / columns);
 
   const slicedMonthData = Array.from({ length: rows }, (_, i) =>
     monthData.slice(i * columns, i * columns + columns)
@@ -63,7 +63,7 @@ const MonthSchedule = ({ monthData, nextMonthData }) => {
                   // Fill remaining cells if the row is not full
                   Array.from({ length: columns - row.length }, (_, index) => (
                     <TableCell key={row.length + index} style={{ backgroundColor: getColorForShift(nextMonthData[index].shift) }}>
-                      <span style={{color: 'gray' }}>{nextMonthData[index].date.getDate()}</span> 
+                      <span style={{color: 'DimGray' }}>{nextMonthData[index].date.getDate()}</span> 
                     </TableCell>
                   ))
                 )}

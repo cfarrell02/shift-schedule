@@ -28,6 +28,8 @@ const FourShiftScheduleWithGrid = () => {
     if (daysOff<0)
       setDaysOff(0);
 
+    scheduleDetails.length > 0 && setScheduleDetails([]);
+
     if (firstDayIn) {
       const firstDayInDay = (new Date(firstDayIn)).getDate();
       if (firstDayInDay - 1 < 0 || firstDayInDay - 1 > 7) {
@@ -52,7 +54,6 @@ const FourShiftScheduleWithGrid = () => {
       ...Array(daysOff).fill('Off'),
     ];
 
-    console.log(workPattern);
   
     const scheduleDetails = [];
     const year = new Date(firstDayIn).getFullYear();
@@ -88,7 +89,6 @@ const FourShiftScheduleWithGrid = () => {
       }
     }
 
-    console.log(scheduleDetails);
   
     setScheduleDetails(scheduleDetails);
 
@@ -187,7 +187,7 @@ const FourShiftScheduleWithGrid = () => {
         <Divider sx={{ width: '100%', marginTop: '20px'}} />
         <Grid item>
           { scheduleDetails.length > 0 ? (<div style={{textAlign: 'center'}}>
-            <div style={{border: '1px solid black', padding: '10px', marginBottom: '20px', width: "1144px", height:"1768px"}} ref={pdfRef}>
+            <div style={{border: '1px solid black', padding: '2em', marginBottom: '1em', width: "1200px", height:"1940px"}} ref={pdfRef}>
             <Typography variant="h3">{new Date(firstDayIn).getFullYear()}</Typography>
             <ColorKey />
             <ScheduleGrid scheduleDetails={scheduleDetails} /> 
