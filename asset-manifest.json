@@ -1,19 +1,19 @@
 {
   "files": {
     "main.css": "/shift-schedule/static/css/main.4c2dfac1.css",
-    "main.js": "/shift-schedule/static/js/main.a4f6cf9e.js",
+    "main.js": "/shift-schedule/static/js/main.c0d8a770.js",
     "static/js/703.e48937ad.chunk.js": "/shift-schedule/static/js/703.e48937ad.chunk.js",
-    "static/js/379.cf77cf74.chunk.js": "/shift-schedule/static/js/379.cf77cf74.chunk.js",
+    "static/js/379.aa076505.chunk.js": "/shift-schedule/static/js/379.aa076505.chunk.js",
     "static/js/787.de9bfad1.chunk.js": "/shift-schedule/static/js/787.de9bfad1.chunk.js",
     "index.html": "/shift-schedule/index.html",
     "main.4c2dfac1.css.map": "/shift-schedule/static/css/main.4c2dfac1.css.map",
-    "main.a4f6cf9e.js.map": "/shift-schedule/static/js/main.a4f6cf9e.js.map",
+    "main.c0d8a770.js.map": "/shift-schedule/static/js/main.c0d8a770.js.map",
     "703.e48937ad.chunk.js.map": "/shift-schedule/static/js/703.e48937ad.chunk.js.map",
-    "379.cf77cf74.chunk.js.map": "/shift-schedule/static/js/379.cf77cf74.chunk.js.map",
+    "379.aa076505.chunk.js.map": "/shift-schedule/static/js/379.aa076505.chunk.js.map",
     "787.de9bfad1.chunk.js.map": "/shift-schedule/static/js/787.de9bfad1.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.4c2dfac1.css",
-    "static/js/main.a4f6cf9e.js"
+    "static/js/main.c0d8a770.js"
   ]
 }
