@@ -41,7 +41,7 @@ export default function PaletteCreator({ shiftTypes, onChange, onReset }) {
       {shiftTypes.map((type) => (
         <Box
           key={type.id}
-          sx={{ border: '1px solid #ddd', borderRadius: 2, p: 2, display: 'flex', flexWrap: 'wrap', gap: 1.5, alignItems: 'center' }}
+          sx={{ border: 1, borderColor: 'divider', borderRadius: 2, p: 2, display: 'flex', flexWrap: 'wrap', gap: 1.5, alignItems: 'center' }}
         >
           <Box
             aria-hidden

@@ -6,17 +6,17 @@ import { isSameDay } from '../../lib/schedule';
 const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 const MonthSchedule = ({ month, typesById, today }) => (
-  <TableContainer component={Paper}>
+  <TableContainer component={Paper} variant="outlined">
     <Table size="small" aria-label={`${month.name} schedule`} sx={{ tableLayout: 'fixed' }}>
       <TableHead>
         <TableRow>
-          <TableCell colSpan={7} align="center">
+          <TableCell colSpan={7} align="center" sx={{ bgcolor: '#f6f7fb' }}>
             <Typography variant="h6">{month.name}</Typography>
           </TableCell>
         </TableRow>
         <TableRow>
           {weekDays.map((day) => (
-            <TableCell key={day} align="center" sx={{ px: 0 }}>
+            <TableCell key={day} align="center" sx={{ px: 0, color: 'text.secondary', fontWeight: 600 }}>
               <abbr title={day} style={{ textDecoration: 'none' }}>
                 {day.charAt(0)}
               </abbr>

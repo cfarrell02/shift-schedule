@@ -14,8 +14,8 @@ const ColorKey = ({ shiftTypes }) => (
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          border: '1px solid black',
-          borderRadius: '4px',
+          border: '1px solid rgba(0, 0, 0, 0.25)',
+          borderRadius: '8px',
           ...shiftBackground(type),
         }}
       >

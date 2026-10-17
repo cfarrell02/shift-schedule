@@ -1,17 +1,22 @@
 import React from 'react';
-import { Typography, Link } from '@mui/material';
+import { Box, Typography, Link } from '@mui/material';
+import GitHubIcon from '@mui/icons-material/GitHub';
 
-const Footer = () => {
-  return (
-    <footer style={{ textAlign: 'center', marginTop: '20px', marginBottom: '20px' }}>
-      <Typography variant="body2">
-        View this project on{' '}
-        <Link href="https://github.com/cfarrell02/shift-schedule" target="_blank" rel="noopener noreferrer">
-          GitHub
-        </Link>
-      </Typography>
-    </footer>
-  );
-};
+const Footer = () => (
+  <Box component="footer" sx={{ textAlign: 'center', pb: 5 }}>
+    <Typography variant="body2" color="text.secondary">
+      <Link
+        href="https://github.com/cfarrell02/shift-schedule"
+        target="_blank"
+        rel="noopener noreferrer"
+        color="inherit"
+        sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.75 }}
+      >
+        <GitHubIcon fontSize="small" />
+        View this project on GitHub
+      </Link>
+    </Typography>
+  </Box>
+);
 
 export default Footer;
