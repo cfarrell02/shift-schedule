@@ -1,4 +1,4 @@
-import { DEFAULT_PATTERN, DEFAULT_SHIFT_TYPES, decodeSettings, encodeSettings, getSharedSettings, sanitizeSettings } from './settings';
+import { DEFAULT_PATTERN, DEFAULT_SHIFT_TYPES, applyPrintFriendlyColors, decodeSettings, encodeSettings, getSharedSettings, sanitizeSettings } from './settings';
 
 const settings = {
   start: '2026-03-05',
@@ -45,5 +45,19 @@ describe('sanitizeSettings', () => {
     expect(result.start).not.toBe('2026-02-31');
     expect(result.year).toBe(2200);
     expect(sanitizeSettings({ ...settings, shiftTypes: [] }).shiftTypes).toEqual(DEFAULT_SHIFT_TYPES);
+  });
+});
+
+describe('applyPrintFriendlyColors', () => {
+  it('makes days off plain white and gives working shifts distinct styles', () => {
+    const result = applyPrintFriendlyColors(settings.shiftTypes);
+    expect(result.map(({ color, striped }) => ({ color, striped }))).toEqual([
+      { color: '#2196f3', striped: true },
+      { color: '#9575cd', striped: false },
+      { color: '#ffffff', striped: false },
+      { color: '#fb8c00', striped: true },
+    ]);
+    // Names, codes and ids are kept
+    expect(result.map((t) => t.label)).toEqual(settings.shiftTypes.map((t) => t.label));
   });
 });

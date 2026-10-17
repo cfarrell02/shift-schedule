@@ -9,8 +9,8 @@ export const MIN_YEAR = 1900;
 export const MAX_YEAR = 2200;
 
 export const DEFAULT_SHIFT_TYPES = [
-  { id: 'day', label: 'Day Shift', code: 'D', color: '#4caf50', striped: true, isOff: false },
-  { id: 'night', label: 'Night Shift', code: 'N', color: '#2196f3', striped: true, isOff: false },
+  { id: 'day', label: 'Day Shift', code: 'D', color: '#2196f3', striped: true, isOff: false },
+  { id: 'night', label: 'Night Shift', code: 'N', color: '#ffeb3b', striped: false, isOff: false },
   { id: 'off', label: 'Off', code: '', color: '#ffffff', striped: false, isOff: true },
 ];
 
@@ -19,6 +19,26 @@ export const DEFAULT_PATTERN = [
   { typeId: 'night', count: 2 },
   { typeId: 'off', count: 4 },
 ];
+
+// Styles that stay distinct when printed in greyscale: alternating stripes and solid mid-tones.
+// Fills are kept light enough for the black day numbers and codes to stay readable.
+const PRINT_FRIENDLY_STYLES = [
+  { color: '#2196f3', striped: true },
+  { color: '#9575cd', striped: false },
+  { color: '#fb8c00', striped: true },
+  { color: '#4db6ac', striped: false },
+];
+
+// Recolour shift types for black and white printing: days off go plain white,
+// working shifts take the print-friendly styles in order
+export const applyPrintFriendlyColors = (shiftTypes) => {
+  let working = 0;
+  return shiftTypes.map((type) =>
+    type.isOff
+      ? { ...type, color: '#ffffff', striped: false }
+      : { ...type, ...PRINT_FRIENDLY_STYLES[working++ % PRINT_FRIENDLY_STYLES.length] }
+  );
+};
 
 export const defaultSettings = () => ({
   start: formatDateInput(new Date()),
