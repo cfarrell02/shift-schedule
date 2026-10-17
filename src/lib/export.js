@@ -3,7 +3,7 @@ import jsPDF from 'jspdf';
 import { SCALE_INNER_ATTR, SCALE_OUTER_ATTR } from '../components/scale-to-fit';
 
 // Capture at full size even when the on-screen preview is scaled down to fit
-const capture = (element) =>
+const capture = (element, { markToday }) =>
   html2canvas(element, {
     scale: 2,
     backgroundColor: '#ffffff',
@@ -13,6 +13,13 @@ const capture = (element) =>
         el.style.height = 'auto';
         el.style.overflow = 'visible';
       });
+      if (!markToday) {
+        doc.querySelectorAll('[data-today]').forEach((cell) => {
+          cell.style.boxShadow = 'none';
+          // The first child is the date number, which is bold for today
+          cell.firstElementChild.style.fontWeight = '400';
+        });
+      }
     },
   });
 
@@ -25,8 +32,8 @@ const triggerDownload = (href, filename) => {
   link.remove();
 };
 
-export const downloadPdf = async (element, filename) => {
-  const canvas = await capture(element);
+export const downloadPdf = async (element, filename, options) => {
+  const canvas = await capture(element, options);
   const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const margin = 10;
   const pageWidth = pdf.internal.pageSize.getWidth();
@@ -41,8 +48,8 @@ export const downloadPdf = async (element, filename) => {
   pdf.save(filename);
 };
 
-export const downloadPng = async (element, filename) => {
-  const canvas = await capture(element);
+export const downloadPng = async (element, filename, options) => {
+  const canvas = await capture(element, options);
   const margin = 100;
   const padded = document.createElement('canvas');
   padded.width = canvas.width + margin * 2;

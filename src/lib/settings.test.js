@@ -5,6 +5,7 @@ const settings = {
   year: 2026,
   shiftTypes: [...DEFAULT_SHIFT_TYPES, { id: 'long', label: 'Lá fada ☀', code: 'L', color: '#ff9800', striped: false, isOff: false }],
   pattern: DEFAULT_PATTERN,
+  markTodayInExports: true,
 };
 
 describe('settings encoding', () => {

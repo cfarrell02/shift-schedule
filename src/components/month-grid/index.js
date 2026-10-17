@@ -35,6 +35,7 @@ const MonthSchedule = ({ month, typesById, today }) => (
                   key={date.getTime()}
                   align="center"
                   title={type?.label}
+                  data-today={isToday || undefined}
                   sx={{
                     px: 0,
                     py: 0.5,

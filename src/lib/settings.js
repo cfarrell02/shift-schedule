@@ -25,6 +25,7 @@ export const defaultSettings = () => ({
   year: new Date().getFullYear(),
   shiftTypes: DEFAULT_SHIFT_TYPES,
   pattern: DEFAULT_PATTERN,
+  markTodayInExports: false,
 });
 
 export const clampInt = (value, min, max) => {
@@ -66,6 +67,7 @@ export const sanitizeSettings = (raw) => {
     year: clampInt(raw.year ?? fallback.year, MIN_YEAR, MAX_YEAR),
     shiftTypes: shiftTypes.slice(0, MAX_SHIFT_TYPES),
     pattern: pattern.slice(0, MAX_PATTERN_BLOCKS),
+    markTodayInExports: Boolean(raw.markTodayInExports),
   };
 };
 

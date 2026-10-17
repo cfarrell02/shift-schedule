@@ -5,7 +5,9 @@ import {
   AccordionSummary,
   Box,
   Button,
+  Checkbox,
   Divider,
+  FormControlLabel,
   Grid,
   IconButton,
   Snackbar,
@@ -44,7 +46,7 @@ const FourShiftScheduleWithGrid = () => {
   const [message, setMessage] = useState('');
   const exportRef = useRef(null);
 
-  const { start, year, shiftTypes, pattern } = settings;
+  const { start, year, shiftTypes, pattern, markTodayInExports } = settings;
   const update = (changes) => setSettings((prev) => ({ ...prev, ...changes }));
 
   useEffect(() => {
@@ -164,7 +166,7 @@ const FourShiftScheduleWithGrid = () => {
               variant="contained"
               startIcon={<DownloadIcon />}
               disabled={exporting}
-              onClick={() => runExport(() => downloadPdf(exportRef.current, `schedule-${year}.pdf`))}
+              onClick={() => runExport(() => downloadPdf(exportRef.current, `schedule-${year}.pdf`, { markToday: markTodayInExports }))}
             >
               PDF
             </Button>
@@ -172,7 +174,7 @@ const FourShiftScheduleWithGrid = () => {
               variant="contained"
               startIcon={<DownloadIcon />}
               disabled={exporting}
-              onClick={() => runExport(() => downloadPng(exportRef.current, `schedule-${year}.png`))}
+              onClick={() => runExport(() => downloadPng(exportRef.current, `schedule-${year}.png`, { markToday: markTodayInExports }))}
             >
               PNG
             </Button>
@@ -183,6 +185,17 @@ const FourShiftScheduleWithGrid = () => {
               Copy share link
             </Button>
           </Stack>
+          <Box sx={{ textAlign: 'center', mb: 2 }}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={markTodayInExports}
+                  onChange={(e) => update({ markTodayInExports: e.target.checked })}
+                />
+              }
+              label="Mark today in PDF and PNG downloads"
+            />
+          </Box>
           <ScaleToFit width={EXPORT_WIDTH}>
             <Box
               ref={exportRef}
