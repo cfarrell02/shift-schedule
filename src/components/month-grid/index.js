@@ -1,79 +1,72 @@
 import React from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography } from '@mui/material';
+import { shiftBackground } from '../../lib/colors';
+import { isSameDay } from '../../lib/schedule';
 
-const MonthSchedule = ({ monthData, nextMonthData }) => {
-  const monthName = monthData.length > 0 ? monthData[0].date.toLocaleString('default', { month: 'long' }) : '';
-  const columns = 7; // Change to 6 or 7 for the number of columns you want
+const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-
-
-  
-  const monthStartDay = monthData.length > 0 ? monthData[0].date.getDay() : 0;
-    const emptyCells = Array.from({ length: monthStartDay }, (_, index) => ({ date: null, shift: null }));
-
-    monthData = [...emptyCells, ...monthData];
-  const rows = Math.ceil(monthData.length / columns);
-
-  const slicedMonthData = Array.from({ length: rows }, (_, i) =>
-    monthData.slice(i * columns, i * columns + columns)
-  );
-
-  const getColorForShift = (shift) => {
-    switch (shift) {
-      case 'Day Shift':
-        return '#2196f3'; // Blue for Day Shift
-      case 'Night Shift':
-        return '#ffeb3b'; // Yellow for Night Shift
-      default:
-        return 'transparent'; // No color for Off
-    }
-  };
-
-  const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
-
-  return (
-    <div>
-      <TableContainer component={Paper}>
-        <Table aria-label="month schedule">
-          <TableHead>
-            <TableRow>
-                <TableCell colSpan={columns} style={{ textAlign: 'center' }}>
-              <Typography variant="h6">{monthName}</Typography>
+const MonthSchedule = ({ month, typesById, today }) => (
+  <TableContainer component={Paper}>
+    <Table size="small" aria-label={`${month.name} schedule`} sx={{ tableLayout: 'fixed' }}>
+      <TableHead>
+        <TableRow>
+          <TableCell colSpan={7} align="center">
+            <Typography variant="h6">{month.name}</Typography>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          {weekDays.map((day) => (
+            <TableCell key={day} align="center" sx={{ px: 0 }}>
+              <abbr title={day} style={{ textDecoration: 'none' }}>
+                {day.charAt(0)}
+              </abbr>
+            </TableCell>
+          ))}
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {month.weeks.map((week, weekIndex) => (
+          <TableRow key={weekIndex}>
+            {week.map(({ date, inMonth, typeId }) => {
+              const type = typesById.get(typeId);
+              const isToday = inMonth && isSameDay(date, today);
+              return (
+                <TableCell
+                  key={date.getTime()}
+                  align="center"
+                  title={type?.label}
+                  sx={{
+                    px: 0,
+                    py: 0.5,
+                    height: 44,
+                    border: '1px solid rgba(224, 224, 224, 1)',
+                    ...shiftBackground(type),
+                    ...(isToday && { boxShadow: 'inset 0 0 0 3px #d32f2f' }),
+                  }}
+                >
+                  <Typography
+                    variant="body2"
+                    component="div"
+                    sx={{ color: inMonth ? 'text.primary' : 'DimGray', fontWeight: isToday ? 700 : 400, lineHeight: 1.2 }}
+                  >
+                    {date.getDate()}
+                  </Typography>
+                  {/* Letter code so shifts are readable without colour, e.g. when printed in black and white */}
+                  <Typography
+                    variant="caption"
+                    component="div"
+                    sx={{ fontWeight: 700, lineHeight: 1.2, minHeight: '1.2em', opacity: inMonth ? 1 : 0.6 }}
+                  >
+                    {type?.code}
+                  </Typography>
                 </TableCell>
-            </TableRow>
-            <TableRow>
-                {weekDays.map((day, index) => (
-                    <TableCell key={index} style={{ textAlign: 'center' }}>
-                    <Typography variant="body1">{day.charAt(0)}</Typography>
-                    </TableCell>
-                ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {slicedMonthData.map((row, rowIndex) => (
-              <TableRow key={rowIndex}>
-    
-                {row.map((dayInfo, index) => (
-                  <TableCell key={index} style={{ backgroundColor: getColorForShift(dayInfo.shift) }}>
-                    <span>{dayInfo.date && dayInfo.date.getDate()}</span>
-                  </TableCell>
-                ))}
-                {row.length < columns && (
-                  // Fill remaining cells if the row is not full
-                  Array.from({ length: columns - row.length }, (_, index) => (
-                    <TableCell key={row.length + index} style={{ backgroundColor: getColorForShift(nextMonthData[index].shift) }}>
-                      <span style={{color: 'DimGray' }}>{nextMonthData[index].date.getDate()}</span> 
-                    </TableCell>
-                  ))
-                )}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </div>
-  );
-};
+              );
+            })}
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  </TableContainer>
+);
 
 export default MonthSchedule;

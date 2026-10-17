@@ -1,35 +1,31 @@
 import React from 'react';
-import { Paper, Typography, Box, Grid } from '@mui/material';
+import { Typography, Box } from '@mui/material';
+import { shiftBackground } from '../../lib/colors';
 
-const ColorKey = () => {
-  const colorCodes = [
-    { label: 'Off', color: 'transparent' }, // No color for Off
-    { label: 'Day Shift', color: '#2196f3' }, // Blue for Day Shift
-    { label: 'Night Shift', color: '#ffeb3b' }, // Yellow for Night Shift
-
-  ];
-
-  return (
-    <Grid container spacing={2} sx={{ marginBottom: '20px' }}>
-      {colorCodes.map(({ label, color }, index) => (
-        <Grid item xs={4} key={index}>
-          <Box
-            sx={{
-              height: '100%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              bgcolor: color,
-              border: '1px solid black',
-              borderRadius: '4px',
-            }}
-          >
-            <Typography variant="body1">{label}</Typography>
-          </Box>
-        </Grid>
-      ))}
-    </Grid>
-  );
-};
+const ColorKey = ({ shiftTypes }) => (
+  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 3 }}>
+    {shiftTypes.map((type) => (
+      <Box
+        key={type.id}
+        sx={{
+          flex: '1 1 0',
+          minWidth: 160,
+          py: 1,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          border: '1px solid black',
+          borderRadius: '4px',
+          ...shiftBackground(type),
+        }}
+      >
+        <Typography variant="body1">
+          {type.label}
+          {type.code && <strong> ({type.code})</strong>}
+        </Typography>
+      </Box>
+    ))}
+  </Box>
+);
 
 export default ColorKey;

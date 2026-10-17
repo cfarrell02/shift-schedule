@@ -1,209 +1,209 @@
-import React, { useEffect, useState } from 'react';
-import { Button, TextField, Typography, Grid, styled, Divider, ButtonGroup, CircularProgress } from '@mui/material';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Box,
+  Button,
+  Divider,
+  Grid,
+  IconButton,
+  Snackbar,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import DownloadIcon from '@mui/icons-material/Download';
+import EventIcon from '@mui/icons-material/Event';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import LinkIcon from '@mui/icons-material/Link';
 import ScheduleGrid from '../schedule-grid';
 import ColorKey from '../schedule-key';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+import PaletteCreator from '../palette-creator';
+import PatternEditor from '../pattern-editor';
+import ScaleToFit from '../scale-to-fit';
+import { buildIcs, buildYear, expandPattern, parseDateInput } from '../../lib/schedule';
+import { downloadPdf, downloadPng, downloadText } from '../../lib/export';
+import {
+  DEFAULT_PATTERN,
+  DEFAULT_SHIFT_TYPES,
+  MAX_YEAR,
+  MIN_YEAR,
+  buildShareUrl,
+  loadInitialSettings,
+  storeSettings,
+} from '../../lib/settings';
 
-const StyledDiv = styled('div')({
-  flexGrow: 1,
-  margin: '16px',
-});
+const EXPORT_WIDTH = 1200;
 
 const FourShiftScheduleWithGrid = () => {
-  const [firstDayIn, setFirstDayIn] = useState(new Date());
-  const [dayShifts, setDayShifts] = useState(2);
-  const [nightShifts, setNightShifts] = useState(2);
-  const [daysOff, setDaysOff] = useState(4);
-  const [scheduleDetails, setScheduleDetails] = useState({});
-  const pdfRef = React.createRef();
-  const [loading, setLoading] = useState(false);
+  const [settings, setSettings] = useState(() => loadInitialSettings());
+  const [exporting, setExporting] = useState(false);
+  const [message, setMessage] = useState('');
+  const exportRef = useRef(null);
 
-  //useEffect validation for firstDayIn, dayShifts, nightShifts, and daysOff
+  const { start, year, shiftTypes, pattern } = settings;
+  const update = (changes) => setSettings((prev) => ({ ...prev, ...changes }));
+
   useEffect(() => {
-    if (dayShifts<0)
-      setDayShifts(0);
-    if (nightShifts<0)
-      setNightShifts(0);
-    if (daysOff<0)
-      setDaysOff(0);
+    storeSettings(settings);
+  }, [settings]);
 
-    scheduleDetails.length > 0 && setScheduleDetails([]);
+  // A shared link has been saved locally by now, so tidy it out of the address bar
+  useEffect(() => {
+    if (window.location.search) window.history.replaceState(null, '', window.location.pathname);
+  }, []);
 
-    if (firstDayIn) {
-      const firstDayInDay = (new Date(firstDayIn)).getDate();
-      if (firstDayInDay - 1 < 0 || firstDayInDay - 1 > 7) {
-        setFirstDayIn(new Date(firstDayIn).getFullYear() + '-01-01');
-      }
-    }
-  }, [dayShifts, nightShifts, daysOff, firstDayIn]);
-    
+  const startDate = parseDateInput(start);
+  const sequence = useMemo(() => expandPattern(pattern), [pattern]);
+  const typesById = useMemo(() => new Map(shiftTypes.map((type) => [type.id, type])), [shiftTypes]);
+  const months = useMemo(() => {
+    // Parse again here so the memo depends on the start string, not a new Date each render
+    const date = parseDateInput(start);
+    return date && sequence.length > 0 ? buildYear(year, date, sequence) : null;
+  }, [start, year, sequence]);
+  const today = new Date();
 
-  const handleGenerateSchedule = async () => {
-    setLoading(true);
-
-    // Check if firstDayIn, dayShifts, nightShifts, and daysOff are valid
-    if (!firstDayIn || dayShifts < 0 || nightShifts < 0 || daysOff < 0) {
-      alert('Please enter valid values');
-      return;
-    }
-  
-    const workPattern = [
-      ...Array(dayShifts).fill('Day Shift'),
-      ...Array(nightShifts).fill('Night Shift'),
-      ...Array(daysOff).fill('Off'),
-    ];
-
-  
-    const scheduleDetails = [];
-    const year = new Date(firstDayIn).getFullYear();
-    const isLeapYear = (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
-    const daysInMonth = [
-      31,
-      isLeapYear ? 29 : 28,
-      31,
-      30,
-      31,
-      30,
-      31,
-      31,
-      30,
-      31,
-      30,
-      31,
-      31 // Extra month to add in january to end of december
-    ];
-  
-    let dayCounter = workPattern.length;
-    //Modify dayCounter based on firstDayIn
-    const firstDayInDay = new Date(firstDayIn).getDate();
-    dayCounter -= firstDayInDay - 1;
-    for (let month = 0; month < 13; month++) { // Include an extra month as each month has information for the next month
-      scheduleDetails[month] = [];
-      const daysInCurrentMonth = daysInMonth[month];
-      for (let day = 1; day <= daysInCurrentMonth; day++) {
-        const currentDate = new Date(year, month, day);
-        const dayObject = { date: new Date(currentDate), shift: workPattern[dayCounter++%workPattern.length] };
-
-        scheduleDetails[month].push(dayObject);
-      }
-    }
-
-  
-    setScheduleDetails(scheduleDetails);
-
-    setLoading(false);
-  };
-
-  const downloadSchedulePDF = () => {
-
-    const downloadMargin = 10;
-    const pdf = new jsPDF();
-
-    html2canvas(pdfRef.current).then((canvas) => {
-      const imgData = canvas.toDataURL('image/png');
-
-      const pdfWidth = pdf.internal.pageSize.getWidth() - downloadMargin * 2;
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width - downloadMargin * 2;
-
-      pdf.addImage(imgData, 'PNG', downloadMargin, downloadMargin, pdfWidth, pdfHeight);
-      pdf.save(`schedule-${new Date(firstDayIn).getFullYear()}.pdf`);
+  const changeShiftTypes = (nextTypes) =>
+    update({
+      shiftTypes: nextTypes,
+      // Drop pattern blocks whose shift type was removed
+      pattern: pattern.filter((block) => nextTypes.some((type) => type.id === block.typeId)),
     });
+
+  const runExport = async (exportFn) => {
+    setExporting(true);
+    try {
+      await exportFn();
+    } catch (error) {
+      console.error(error);
+      setMessage('Sorry, the download failed. Please try again.');
+    } finally {
+      setExporting(false);
+    }
   };
 
-  const downloadSchedulePNG = () => {
-
-    const downloadMargin = 100
-    html2canvas(pdfRef.current).then((canvas) => {
-      const imgData = canvas.toDataURL('image/png');
-  
-      // Create a new canvas with margins
-      const newCanvas = document.createElement('canvas');
-      const ctx = newCanvas.getContext('2d');
-  
-      newCanvas.width = canvas.width + downloadMargin*2 ;
-      newCanvas.height = canvas.height + downloadMargin*2 ;
-  
-      ctx.fillStyle = 'white'; // Set the background color
-      ctx.fillRect(0, 0, newCanvas.width, newCanvas.height);
-      ctx.drawImage(canvas, downloadMargin, downloadMargin);
-  
-      // Convert the new canvas to PNG and trigger the download
-      const link = document.createElement('a');
-      link.download = `schedule-${new Date(firstDayIn).getFullYear()}.png`;
-      link.href = newCanvas.toDataURL('image/png');
-      link.click();
-    });
+  const copyShareLink = async () => {
+    const url = buildShareUrl(settings);
+    try {
+      await navigator.clipboard.writeText(url);
+      setMessage('Link copied. Anyone who opens it will see this schedule.');
+    } catch {
+      window.prompt('Copy this link to share your schedule:', url);
+    }
   };
-    
+
+  const downloadCalendar = () => {
+    downloadText(buildIcs({ year, start: startDate, sequence, shiftTypes }), `shifts-${year}.ics`, 'text/calendar');
+    setMessage(`Downloaded shifts-${year}.ics. Open it to add your shifts to your calendar.`);
+  };
+
   return (
-    <StyledDiv style={{overflow: 'auto'}} >
-      <Grid container direction="column" spacing={2} alignItems="center">
-        <Grid item>
-          <Typography variant="h6">Four Shift Schedule Generator</Typography>
+    <Box>
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={5}>
+          <Stack spacing={3}>
+            <TextField
+              label="First day of a cycle"
+              type="date"
+              value={start}
+              onChange={(e) => update({ start: e.target.value })}
+              error={!startDate}
+              helperText={startDate ? 'Any day the first block of your pattern starts' : 'Enter a valid date'}
+              InputLabelProps={{ shrink: true }}
+            />
+            <Stack direction="row" alignItems="center" spacing={1}>
+              <Typography>Year</Typography>
+              <IconButton aria-label="Previous year" disabled={year <= MIN_YEAR} onClick={() => update({ year: year - 1 })}>
+                <ChevronLeftIcon />
+              </IconButton>
+              <Typography variant="h6" component="span" sx={{ minWidth: '4ch', textAlign: 'center' }}>
+                {year}
+              </Typography>
+              <IconButton aria-label="Next year" disabled={year >= MAX_YEAR} onClick={() => update({ year: year + 1 })}>
+                <ChevronRightIcon />
+              </IconButton>
+              {year !== today.getFullYear() && (
+                <Button size="small" onClick={() => update({ year: today.getFullYear() })}>
+                  This year
+                </Button>
+              )}
+            </Stack>
+          </Stack>
         </Grid>
-        <Grid item>
-          <TextField
-            label="Start of first block"
-            type="date"
-            value={firstDayIn}
-            onChange={(e) => setFirstDayIn(e.target.value)}
-            sx={{ m: 1, width: '20ch' }}
-            InputLabelProps={{ shrink: true }}
-          />
-          <TextField
-            label="Day Shifts"
-            type="number"
-            value={dayShifts}
-            onChange={(e) => setDayShifts(parseInt(e.target.value))}
-            sx={{ m: 1, width: '10ch' }}
-          />
-          <TextField
-            label="Night Shifts"
-            type="number"
-            value={nightShifts}
-            onChange={(e) => setNightShifts(parseInt(e.target.value))}
-            sx={{ m: 1, width: '10ch' }}
-          />
-          <TextField
-            label="Days Off"
-            type="number"
-            value={daysOff}
-            onChange={(e) => setDaysOff(parseInt(e.target.value))}
-            sx={{ m: 1, width: '10ch' }}
-          />
+        <Grid item xs={12} md={7}>
+          <Typography variant="subtitle1" gutterBottom>
+            Pattern
+          </Typography>
+          <PatternEditor pattern={pattern} shiftTypes={shiftTypes} onChange={(next) => update({ pattern: next })} />
         </Grid>
-        <Grid item>
-          {scheduleDetails.length > 0 ? (
-            <Button variant="contained" onClick={() => setScheduleDetails([])}>
-              Clear Schedule
-            </Button>
-          ):
-          <Button variant="contained" onClick={handleGenerateSchedule}>
-            Generate Schedule
-          </Button>
-          }
-        </Grid>
-        <Divider sx={{ width: '100%', marginTop: '20px'}} />
-        <Grid item>
-          { scheduleDetails.length > 0 ? (<div style={{textAlign: 'center'}}>
-            <div style={{border: '1px solid black', padding: '2em', marginBottom: '1em', width: "1200px", height:"1940px"}} ref={pdfRef}>
-            <Typography variant="h3">{new Date(firstDayIn).getFullYear()}</Typography>
-            <ColorKey />
-            <ScheduleGrid scheduleDetails={scheduleDetails} /> 
-            </div>
-            <ButtonGroup variant="outlined" aria-label="outlined primary button group">
-            <Button onClick={() => downloadSchedulePDF()}>
-              Download as PDF
-            </Button>
-            <Button  onClick={() => downloadSchedulePNG()}>
-              Download as PNG
-            </Button>
-            </ButtonGroup>
-            </div>): (loading && <CircularProgress/>) }
+        <Grid item xs={12}>
+          <Accordion disableGutters variant="outlined">
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography>Shift types and colours</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <PaletteCreator
+                shiftTypes={shiftTypes}
+                onChange={changeShiftTypes}
+                onReset={() => update({ shiftTypes: DEFAULT_SHIFT_TYPES, pattern: DEFAULT_PATTERN })}
+              />
+            </AccordionDetails>
+          </Accordion>
         </Grid>
       </Grid>
-    </StyledDiv>
+
+      <Divider sx={{ my: 3 }} />
+
+      {months ? (
+        <>
+          <Stack direction="row" flexWrap="wrap" justifyContent="center" gap={1} sx={{ mb: 2 }}>
+            <Button
+              variant="contained"
+              startIcon={<DownloadIcon />}
+              disabled={exporting}
+              onClick={() => runExport(() => downloadPdf(exportRef.current, `schedule-${year}.pdf`))}
+            >
+              PDF
+            </Button>
+            <Button
+              variant="contained"
+              startIcon={<DownloadIcon />}
+              disabled={exporting}
+              onClick={() => runExport(() => downloadPng(exportRef.current, `schedule-${year}.png`))}
+            >
+              PNG
+            </Button>
+            <Button variant="outlined" startIcon={<EventIcon />} onClick={downloadCalendar}>
+              Add to calendar (.ics)
+            </Button>
+            <Button variant="outlined" startIcon={<LinkIcon />} onClick={copyShareLink}>
+              Copy share link
+            </Button>
+          </Stack>
+          <ScaleToFit width={EXPORT_WIDTH}>
+            <Box
+              ref={exportRef}
+              sx={{ border: '1px solid black', p: 4, bgcolor: '#fff', boxSizing: 'border-box', textAlign: 'center' }}
+            >
+              <Typography variant="h3" gutterBottom>
+                {year}
+              </Typography>
+              <ColorKey shiftTypes={shiftTypes} />
+              <ScheduleGrid months={months} typesById={typesById} today={today} />
+            </Box>
+          </ScaleToFit>
+        </>
+      ) : (
+        <Typography align="center" color="text.secondary">
+          Set a start date and a pattern with at least one day to see your schedule.
+        </Typography>
+      )}
+
+      <Snackbar open={Boolean(message)} autoHideDuration={5000} onClose={() => setMessage('')} message={message} />
+    </Box>
   );
 };
 

@@ -2,17 +2,15 @@ import React from 'react';
 import { Grid } from '@mui/material';
 import MonthSchedule from '../month-grid';
 
-const ScheduleGrid = ({ scheduleDetails }) => {
-  return (
-    <Grid container spacing={4} >
-      {scheduleDetails.map((monthData, index) => (
-        index >= 12 ? null : // Dont do any month after 12 months
-        <Grid item xs={4} key={index}>
-          <MonthSchedule monthData={monthData} nextMonthData={scheduleDetails[index+1]} />
-        </Grid>
-      ))}
-    </Grid>
-  );
-};
+// Always laid out 3 across: this is rendered at a fixed width for exporting and scaled down on small screens
+const ScheduleGrid = ({ months, typesById, today }) => (
+  <Grid container spacing={4}>
+    {months.map((month) => (
+      <Grid item xs={4} key={month.name}>
+        <MonthSchedule month={month} typesById={typesById} today={today} />
+      </Grid>
+    ))}
+  </Grid>
+);
 
 export default ScheduleGrid;

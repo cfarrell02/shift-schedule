@@ -4,23 +4,28 @@ This project is a web application that generates a four-shift schedule based on 
 
 ## Functionality
 
-- **Input Parameters**: Users can input the first day of the schedule, the number of day shifts, night shifts, and days off.
-- **Schedule Generation**: Based on the provided inputs, the application generates a yearly schedule displaying day shifts, night shifts, and days off.
-- **Visual Representation**: The schedule is presented in a grid/table format, showcasing shifts for each day of the year.
-- **Month View**: Users can view monthly schedules in a tabular format, with color-coded representation of shifts.
+- **Any rota pattern**: Build the repeating cycle from blocks (e.g. 2 day shifts, 2 night shifts, 4 days off) and pick any date on which a cycle starts. Dates before or after that work.
+- **Custom shift types**: Add your own shift types (e.g. long days) with a name, a short code, a colour and optional stripes.
+- **Yearly view**: See the whole year month by month, with each day's shift colour and code, neighbouring months' days filling the grid, and today highlighted. It scales down to fit phones.
+- **Export**: Download the schedule as a PDF or PNG, or as an `.ics` file to add your shifts to Google, Apple or Outlook calendars.
+- **Saved and shareable**: Your settings are kept in your browser, and "Copy share link" makes a link that opens the same schedule anywhere.
 
 ## Components
 
-- **Four Shift Schedule**: Main component allowing users to input details and generate the schedule.
-- **Schedule Grid**: Displays the yearly schedule in a grid/table format.
-- **Month Schedule**: Component showcasing the monthly schedule with color-coded shifts.
+- **Four Shift Schedule**: Main component holding the settings, controls, preview and exports.
+- **Pattern Editor**: Edits the blocks that make up the repeating cycle.
+- **Palette Creator**: Edits the shift types and their colours.
+- **Schedule Grid / Month Schedule**: The yearly grid of months with colour-coded shifts.
+- **Scale To Fit**: Shows the fixed-width export layout scaled down on small screens.
 - **Footer**: A simple footer with a GitHub link to the project repository.
+
+Schedule calculation, settings and exports live in `src/lib` as plain functions, covered by unit tests (`npm test`).
 
 ## Usage
 
-1. Enter the first day of the block of working days and the number of day shifts, night shifts, and days off.
-2. Click on "Generate Schedule" to create the yearly schedule.
-3. The schedule will be displayed in a grid, with options to download as PDF.
+1. Pick the first day of any cycle, then set up the pattern's blocks.
+2. Optionally customise shift types and colours, and choose the year to show.
+3. The schedule updates as you go. Download it as a PDF, PNG or calendar file, or copy a share link.
 
 ## Installation
 
