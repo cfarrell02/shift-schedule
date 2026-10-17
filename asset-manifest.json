@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/shift-schedule/static/css/main.1244746b.css",
-    "main.js": "/shift-schedule/static/js/main.076b63f2.js",
+    "main.js": "/shift-schedule/static/js/main.52700f85.js",
     "static/js/313.a616587f.chunk.js": "/shift-schedule/static/js/313.a616587f.chunk.js",
     "static/js/967.9dd62f81.chunk.js": "/shift-schedule/static/js/967.9dd62f81.chunk.js",
     "static/js/27.9d07bcc7.chunk.js": "/shift-schedule/static/js/27.9d07bcc7.chunk.js",
@@ -9,6 +9,6 @@
   },
   "entrypoints": [
     "static/css/main.1244746b.css",
-    "static/js/main.076b63f2.js"
+    "static/js/main.52700f85.js"
   ]
 }
