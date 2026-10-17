@@ -12,8 +12,9 @@ import {
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
+import PrintIcon from '@mui/icons-material/Print';
 import { shiftBackground } from '../../lib/colors';
-import { canAddShiftType } from '../../lib/settings';
+import { applyPrintFriendlyColors, canAddShiftType } from '../../lib/settings';
 
 const NEW_TYPE_COLORS = ['#ff9800', '#9c27b0', '#f44336', '#009688', '#795548', '#607d8b'];
 
@@ -94,9 +95,12 @@ export default function PaletteCreator({ shiftTypes, onChange, onReset }) {
       <Typography variant="body2" color="text.secondary">
         Days off aren't added when you export to a calendar.
       </Typography>
-      <Stack direction="row" spacing={1}>
+      <Stack direction="row" flexWrap="wrap" gap={1}>
         <Button startIcon={<AddIcon />} variant="outlined" onClick={addType} disabled={!canAddShiftType(shiftTypes)}>
           Add shift type
+        </Button>
+        <Button startIcon={<PrintIcon />} onClick={() => onChange(applyPrintFriendlyColors(shiftTypes))}>
+          Use black and white friendly colours
         </Button>
         <Button onClick={onReset}>Reset to defaults</Button>
       </Stack>

@@ -21,7 +21,6 @@ import DownloadIcon from '@mui/icons-material/Download';
 import EventIcon from '@mui/icons-material/Event';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import LinkIcon from '@mui/icons-material/Link';
-import PrintIcon from '@mui/icons-material/Print';
 import ScheduleGrid from '../schedule-grid';
 import ColorKey from '../schedule-key';
 import PaletteCreator from '../palette-creator';
@@ -34,7 +33,6 @@ import {
   DEFAULT_SHIFT_TYPES,
   MAX_YEAR,
   MIN_YEAR,
-  applyPrintFriendlyColors,
   buildShareUrl,
   loadInitialSettings,
   storeSettings,
@@ -143,17 +141,6 @@ const FourShiftScheduleWithGrid = () => {
             Pattern
           </Typography>
           <PatternEditor pattern={pattern} shiftTypes={shiftTypes} onChange={(next) => update({ pattern: next })} />
-          <Button
-            size="small"
-            startIcon={<PrintIcon />}
-            sx={{ mt: 1.5 }}
-            onClick={() => {
-              update({ shiftTypes: applyPrintFriendlyColors(shiftTypes) });
-              setMessage('Switched to colours that stay distinct when printed in black and white.');
-            }}
-          >
-            Use black and white friendly colours
-          </Button>
         </Grid>
         <Grid item xs={12}>
           <Accordion disableGutters variant="outlined">
